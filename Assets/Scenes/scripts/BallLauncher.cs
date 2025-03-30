@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,13 +10,39 @@ public class balllauncher : MonoBehaviour
     public Vector3 direction;
     public Transform target;
     public Rigidbody rb;
+    public float speedScaler;
 
-    public Vector3 screenPosition;
-    public Vector3 worldPosition;
+    //needed for ball control/mouse control
+    private Vector3 screenPosition;
+    private Vector3 worldPosition;
 
-    public bool pressed = true;
-    public bool launched = false;
+    //needed to update parts of the program for when the ball is being held or is let go
+    private bool pressed = false;
+    private bool launched = false;
 
+    public Camera MainCamera;
+    public Camera BallCamera;
+
+    //for the velocity prediction line
+    public LineController _LineController;
+    public LineRenderer _LineRenderer;
+
+    //functions for switching camerta
+    public void ShowMainCamera()
+    {
+        MainCamera.enabled = true;
+        BallCamera.enabled = false;
+    }
+
+    public void showBallCamera()
+    {
+        BallCamera.enabled = true;
+        MainCamera.enabled = false;
+    }
+    private void Start()
+    {
+        ShowMainCamera();
+    }
     void Update()
     {
         if (pressed && !launched)
@@ -30,15 +57,22 @@ public class balllauncher : MonoBehaviour
 
             //direction and magnitude are aquired for shooting
             direction = target.position - rb.position;
-            speed = direction.magnitude/2;
-            Debug.Log(rb.position);
+            speed = direction.magnitude*speedScaler;
+            direction.Normalize();
+
+            //trajectory line is drawn
+            _LineController.UpdateTrajectory(rb.position, direction * speed);
+            _LineRenderer.enabled = true;
         }
 
         //ball is fired when mouse is let go
         if (!pressed && launched)
         {
+            _LineRenderer.enabled = false;
+            showBallCamera();
             rb.AddForce(direction * speed, ForceMode.Impulse);
             launched = false;
+            
         }
     }
 

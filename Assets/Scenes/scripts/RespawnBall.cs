@@ -4,13 +4,9 @@ using UnityEngine;
 
 public class RespawnBall : MonoBehaviour
 {
+    public balllauncher _BallLauncher;
     public Rigidbody Ball;
     public GameObject SpawnPoint;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
 
     // Update is called once per frame
     void Update()
@@ -19,6 +15,7 @@ public class RespawnBall : MonoBehaviour
         {
             Ball.isKinematic = true;
             Ball.transform.position = SpawnPoint.transform.position;
+            _BallLauncher.ShowMainCamera();
         }
     }
 }

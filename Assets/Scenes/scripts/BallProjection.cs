@@ -16,7 +16,7 @@ public class LineController : MonoBehaviour
         Points = new Vector3[TrajectoryPoints];
         Points[0] = StartPosition;
         Vector3 Gravity = Physics.gravity;
-        float TimeStep = 0.1f;
+        float TimeStep = 0.2f;
 
         for (int i = 1; i < Points.Length; i++)
         {

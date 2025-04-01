@@ -27,6 +27,9 @@ public class balllauncher : MonoBehaviour
     public LineController _LineController;
     public LineRenderer _LineRenderer;
 
+    //for respawning the ball
+    public RespawnBall RespawnBall;
+
     //functions for switching camerta
     public void ShowMainCamera()
     {
@@ -45,7 +48,7 @@ public class balllauncher : MonoBehaviour
     }
     void Update()
     {
-        if (pressed && !launched)
+        if (pressed && !launched && RespawnBall.isReady)
         {
             //sets the ball to mouse position when clicked/held on
             screenPosition = Input.mousePosition;
@@ -54,7 +57,6 @@ public class balllauncher : MonoBehaviour
             if (worldPosition.y >= -2.0f && worldPosition.y <= 5f) { rb.position = worldPosition; }
             else if (worldPosition.y <= -2.0f) { rb.position = new Vector3(worldPosition.x, -2.0f, worldPosition.z); }
             else if (worldPosition.y >= 5.0f) { rb.position = new Vector3(worldPosition.x, 5.0f, worldPosition.z); }
-
             //direction and magnitude are aquired for shooting
             direction = target.position - rb.position;
             speed = direction.magnitude*speedScaler;
@@ -69,10 +71,10 @@ public class balllauncher : MonoBehaviour
         if (!pressed && launched)
         {
             _LineRenderer.enabled = false;
+            launched = false;
             showBallCamera();
             rb.AddForce(direction * speed, ForceMode.Impulse);
-            launched = false;
-            
+            RespawnBall.isReady = false;
         }
     }
 
@@ -83,9 +85,11 @@ public class balllauncher : MonoBehaviour
         {
             return;
         }
-
-        pressed = true;
-        rb.isKinematic = true;
+        if (RespawnBall.isReady)
+        {
+            pressed = true;
+            rb.isKinematic = true;
+        }
     }
 
     //detects when the user lets go of the ball/mouse
@@ -95,12 +99,11 @@ public class balllauncher : MonoBehaviour
         {
             return;
         }
-
-        pressed = false;
-        launched = true;
-        rb.isKinematic = false;
+        if (RespawnBall.isReady)
+        {
+            pressed = false;
+            launched = true;
+            rb.isKinematic = false;
+        }
     }
-
-
-
 }
